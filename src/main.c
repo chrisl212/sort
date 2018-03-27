@@ -3,6 +3,54 @@
 #include <time.h>
 #include "sorting.h"
 
+long *Load_Into_Array(char *fname, int *size) {
+	FILE *f = fopen(fname, "r");
+	if (!f) {
+		return NULL;
+	}
+	fseek(f, 0, SEEK_END);
+	*size = ftell(f)/sizeof(long);
+	fseek(f, 0, SEEK_SET);
+
+	long *array = malloc(sizeof(*array) * *size); 
+	if (!array) {
+		return NULL;
+	}
+
+	fread(array, *size, sizeof(*array), f);
+	#ifdef DEBUG
+	for (int i = 0; i < *size; i++) {
+		printf("%d\n", array[i]);
+	}
+	#endif
+	printf("\n");
+
+	fclose(f);
+	return array;
+}
+
+int Save_From_Array(char *fname, long *array, int size) {
+	if (!array) {
+		return 0;
+	}
+
+	FILE *f = fopen(fname, "w");
+	if (!f) {
+		return 0;
+	}
+
+	#ifdef DEBUG
+	for (int i = 0; i < size; i++) {
+		printf("%ld\n", array[i]);
+	}
+	#endif
+	int num = fwrite(array, size, sizeof(*array), f);
+
+	fclose(f);
+
+	return num;
+}
+
 int main(int argc, char **argv) {
 	if (argc != 4) {
 		return EXIT_FAILURE;
